@@ -1,0 +1,14 @@
+logs/
+/.metadata/
+.recommenders/
+*.iml
+target/
+.project
+.classpath
+.settings
+.idea/
+.DS_Store
+node_modules/
+build/
+dist.zip
+dist/
