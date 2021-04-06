@@ -40,4 +40,12 @@ public @interface AuditProperty {
      * @return
      */
     String[] include() default {};
+
+    /**
+     * 是否持久的
+     * 不需要比对，审计追踪中一直显示
+     *
+     * @return
+     */
+    boolean isPersistent() default false;
 }

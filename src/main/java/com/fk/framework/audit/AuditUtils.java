@@ -63,6 +63,7 @@ public class AuditUtils {
                 if (auditProperty != null) {
                     String name = auditProperty.name();
                     String className = auditProperty.className();
+                    boolean isPersistent = auditProperty.isPersistent();
                     field.setAccessible(true);
 
                     try {
@@ -75,7 +76,11 @@ public class AuditUtils {
                         Object tValue = field.get(target);
                         String tStr = getValueByField(className, tValue, auditProperty);
 
-                        if (!dStr.equals(tStr)) {
+                        if (isPersistent) {
+                            list.add(name);
+                            list.add(dStr);
+                            list.add(tStr);
+                        } else if (!dStr.equals(tStr)) {
                             list.add(name);
                             list.add(dStr);
                             list.add(tStr);
