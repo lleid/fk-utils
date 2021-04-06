@@ -19,12 +19,13 @@ import java.util.List;
 public class AuditUtils {
 
     /**
-     * 比对 对象属性值
+     * 生成审计追踪日志
      *
+     * 入库使用，可读性较差，阅读需转换
      * @param dest
      * @param target
      */
-    public static String audit(Object dest, Object target) {
+    public static String generateAuditLog(Object dest, Object target) {
         String returnStr = "";
         List<String> returnList = Lists.newArrayList();
 
@@ -75,7 +76,7 @@ public class AuditUtils {
         return returnStr;
     }
 
-    public static String getValueByField(String className, Object dValue, AuditProperty auditProperty) {
+    private static String getValueByField(String className, Object dValue, AuditProperty auditProperty) {
         String returnStr = " ";
         try {
             if (dValue != null) {
@@ -138,7 +139,7 @@ public class AuditUtils {
     }
 
 
-    public static List<String> getValueByFields(String className, Object obj, String[] fields) throws NoSuchFieldException, ClassNotFoundException {
+    private static List<String> getValueByFields(String className, Object obj, String[] fields) throws NoSuchFieldException, ClassNotFoundException {
         List<String> list = Lists.newArrayList();
 
         Class<?> clazz = Class.forName(className);
@@ -179,7 +180,13 @@ public class AuditUtils {
         return list;
     }
 
-    public static List<AuditVo> translateAuditToList(String auditLog) {
+    /**
+     * 根据AuditLog 生成Vo 集合对象
+     *
+     * @param auditLog
+     * @return
+     */
+    public static List<AuditVo> translateAuditLogToListAuditVo(String auditLog) {
         String[] splitStrings = auditLog.split("\\+++");
         List<AuditVo> list = Lists.newArrayList();
         for (String str : splitStrings) {
@@ -191,7 +198,13 @@ public class AuditUtils {
         return list;
     }
 
-    public static String translateAuditToString(String auditLog) {
+    /**
+     * 根据Audit Log 生成，可读性高
+     *
+     * @param auditLog
+     * @return
+     */
+    public static String translateAuditLogToString(String auditLog) {
         String[] splitStrings = auditLog.split("\\+++");
         List<String> list = Lists.newArrayList();
 
@@ -204,5 +217,4 @@ public class AuditUtils {
         }
         return StringUtils.join(list, ",");
     }
-
 }

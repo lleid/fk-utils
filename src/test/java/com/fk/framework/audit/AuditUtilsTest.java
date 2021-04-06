@@ -30,14 +30,14 @@ public class AuditUtilsTest {
 
         operator1.setEmployee(Lists.newArrayList(operator2));
 
-        String auditLog = AuditUtils.audit(operator1, operator2);
+        String auditLog = AuditUtils.generateAuditLog(operator1, operator2);
 //        System.out.println(auditLog);
 
-        List<AuditVo> auditVoList = AuditUtils.translateAuditToList(auditLog);
+        List<AuditVo> auditVoList = AuditUtils.translateAuditLogToListAuditVo(auditLog);
         for (AuditVo v : auditVoList) {
             System.out.println(v.getName() + "," + v.getSource() + "," + v.getTarget());
         }
-        String auditLog2 = AuditUtils.translateAuditToString(auditLog);
+        String auditLog2 = AuditUtils.translateAuditLogToString(auditLog);
         System.out.println(auditLog2);
     }
 }
