@@ -33,7 +33,7 @@ public class AuditUtilsTest {
 
         operator1.setEmployee(Lists.newArrayList(operator2));
 
-        String auditLog = AuditUtils.generateAuditLog(operator1, operator2);
+        String auditLog = AuditUtils.generateAuditLog(null, operator2);
 //        System.out.println(auditLog);
 
         List<AuditVo> auditVoList = AuditUtils.translateAuditLogToListAuditVo(auditLog);

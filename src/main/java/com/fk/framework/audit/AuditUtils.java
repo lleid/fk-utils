@@ -5,6 +5,7 @@ import com.fk.framework.audit.annotations.AuditModel;
 import com.fk.framework.audit.annotations.AuditProperty;
 import com.fk.framework.audit.beans.AuditVo;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
@@ -15,6 +16,7 @@ import java.util.List;
 /**
  * 审计追踪工具类
  */
+@Slf4j
 @SuppressWarnings("all")
 public class AuditUtils {
 
@@ -26,17 +28,33 @@ public class AuditUtils {
      * @param target
      */
     public static String generateAuditLog(Object dest, Object target) {
+        if (target == null) {
+            log.error("AuditUtils.generateAuditLog target cannot be null");
+            return "";
+        }
+
         String returnStr = "";
         List<String> returnList = Lists.newArrayList();
 
-        Class<?> dClazz = dest.getClass();
         Class<?> tClazz = target.getClass();
-
-        AuditModel dAnnotation = dClazz.getAnnotation(AuditModel.class);
         AuditModel tAnnotation = tClazz.getAnnotation(AuditModel.class);
 
-        if (dAnnotation != null && tAnnotation != null && dAnnotation.name().equals(tAnnotation.name())) {
-            Field[] fields = dClazz.getDeclaredFields();
+        if (tAnnotation == null) {
+            log.error("AuditUtils.generateAuditLog target need @AuditModel");
+            return "";
+        }
+
+        if (dest != null) {
+            Class<?> dClazz = dest.getClass();
+            AuditModel dAnnotation = dClazz.getAnnotation(AuditModel.class);
+            if (dest != null && dAnnotation != null && tAnnotation != null && dAnnotation.name().equals(tAnnotation.name())) {
+                log.error("AuditUtils.generateAuditLog dest and target not the same object");
+                return null;
+            }
+        }
+
+        if (tAnnotation != null) {
+            Field[] fields = tClazz.getDeclaredFields();
 
             for (Field field : fields) {
                 AuditProperty auditProperty = field.getAnnotation(AuditProperty.class);
@@ -48,10 +66,13 @@ public class AuditUtils {
                     field.setAccessible(true);
 
                     try {
-                        Object dValue = field.get(dest);
-                        Object tValue = field.get(target);
+                        String dStr = " ";
+                        if (dest != null) {
+                            Object dValue = field.get(dest);
+                            dStr = getValueByField(className, dValue, auditProperty);
+                        }
 
-                        String dStr = getValueByField(className, dValue, auditProperty);
+                        Object tValue = field.get(target);
                         String tStr = getValueByField(className, tValue, auditProperty);
 
                         if (!dStr.equals(tStr)) {
@@ -187,12 +208,14 @@ public class AuditUtils {
      * @return
      */
     public static List<AuditVo> translateAuditLogToListAuditVo(String auditLog) {
-        String[] splitStrings = auditLog.split("\\+++");
         List<AuditVo> list = Lists.newArrayList();
-        for (String str : splitStrings) {
-            String[] arrays = str.split(":::");
-            if (arrays.length >= 3) {
-                list.add(AuditVo.builder().name(arrays[0]).source(arrays[1]).target(arrays[2]).build());
+        if (StringUtils.isNotBlank(auditLog)) {
+            String[] splitStrings = auditLog.split("\\+++");
+            for (String str : splitStrings) {
+                String[] arrays = str.split(":::");
+                if (arrays.length >= 3) {
+                    list.add(AuditVo.builder().name(arrays[0]).source(arrays[1]).target(arrays[2]).build());
+                }
             }
         }
         return list;
@@ -205,14 +228,15 @@ public class AuditUtils {
      * @return
      */
     public static String translateAuditLogToString(String auditLog) {
-        String[] splitStrings = auditLog.split("\\+++");
         List<String> list = Lists.newArrayList();
-
-        for (String str : splitStrings) {
-            String[] strs = str.split(":::");
-            if (strs.length >= 3) {
-                String s = strs[0] + ":'" + strs[1] + "','" + strs[2] + "'";
-                list.add(s);
+        if (StringUtils.isNotBlank(auditLog)) {
+            String[] splitStrings = auditLog.split("\\+++");
+            for (String str : splitStrings) {
+                String[] strs = str.split(":::");
+                if (strs.length >= 3) {
+                    String s = strs[0] + ":'" + strs[1] + "','" + strs[2] + "'";
+                    list.add(s);
+                }
             }
         }
         return StringUtils.join(list, ",");
