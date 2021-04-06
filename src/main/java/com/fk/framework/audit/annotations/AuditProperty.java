@@ -12,9 +12,32 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AuditProperty {
 
+    /**
+     * 字段中文名称
+     *
+     * @return
+     */
     String name() default "";
 
+    /**
+     * 如果是对象或List，需要配置Class
+     *
+     * @return
+     */
+    String className() default "";
+
+    /**
+     * 当属性为Date时，需要设置格式化的方式。
+     * 默认为yyyy-MM-dd HH:mm:ss
+     *
+     * @return
+     */
     String pattern() default "";
 
+    /**
+     * 如果是对象或List，若需要审计详情中需要记录该信息时，需要指明字段名称
+     *
+     * @return
+     */
     String[] include() default {};
 }

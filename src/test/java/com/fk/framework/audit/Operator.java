@@ -1,4 +1,4 @@
-package com.fk.framework.audit.beans;
+package com.fk.framework.audit;
 
 import com.fk.framework.audit.annotations.AuditModel;
 import com.fk.framework.audit.annotations.AuditProperty;
@@ -20,8 +20,8 @@ public class Operator {
     private Date birthday;
     @AuditProperty(name = "是否男生")
     private Boolean isMan = false;
-    @AuditProperty(name = "标签")
+    @AuditProperty(name = "标签", className = "java.lang.String")
     private List<String> list;
-    @AuditProperty(name = "下属")
+    @AuditProperty(name = "下属", className = "com.fk.framework.audit.Operator", include = {"name"})
     private List<Operator> employee;
 }
