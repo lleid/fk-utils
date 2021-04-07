@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AuditProperty {
+public @interface AuditModelProperty {
 
     /**
      * 字段中文名称

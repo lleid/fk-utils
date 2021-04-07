@@ -2,7 +2,7 @@ package com.fk.framework.audit;
 
 
 import com.fk.framework.audit.annotations.AuditModel;
-import com.fk.framework.audit.annotations.AuditProperty;
+import com.fk.framework.audit.annotations.AuditModelProperty;
 import com.fk.framework.audit.beans.AuditVo;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -57,24 +57,24 @@ public class AuditUtils {
             Field[] fields = tClazz.getDeclaredFields();
 
             for (Field field : fields) {
-                AuditProperty auditProperty = field.getAnnotation(AuditProperty.class);
+                AuditModelProperty auditModelProperty = field.getAnnotation(AuditModelProperty.class);
                 List<String> list = Lists.newArrayList();
 
-                if (auditProperty != null) {
-                    String name = auditProperty.name();
-                    String className = auditProperty.className();
-                    boolean isPersistent = auditProperty.isPersistent();
+                if (auditModelProperty != null) {
+                    String name = auditModelProperty.name();
+                    String className = auditModelProperty.className();
+                    boolean isPersistent = auditModelProperty.isPersistent();
                     field.setAccessible(true);
 
                     try {
                         String dStr = " ";
                         if (dest != null) {
                             Object dValue = field.get(dest);
-                            dStr = getValueByField(className, dValue, auditProperty);
+                            dStr = getValueByField(className, dValue, auditModelProperty);
                         }
 
                         Object tValue = field.get(target);
-                        String tStr = getValueByField(className, tValue, auditProperty);
+                        String tStr = getValueByField(className, tValue, auditModelProperty);
 
                         if (isPersistent) {
                             list.add(name);
@@ -102,13 +102,13 @@ public class AuditUtils {
         return returnStr;
     }
 
-    private static String getValueByField(String className, Object dValue, AuditProperty auditProperty) {
+    private static String getValueByField(String className, Object dValue, AuditModelProperty auditModelProperty) {
         String returnStr = " ";
         try {
             if (dValue != null) {
 
-                String pattern = auditProperty.pattern();
-                String[] include = auditProperty.include();
+                String pattern = auditModelProperty.pattern();
+                String[] include = auditModelProperty.include();
 
                 if (dValue instanceof Date) {
                     if (StringUtils.isBlank(pattern)) {
@@ -173,11 +173,11 @@ public class AuditUtils {
         if (dAnnotation != null) {
             for (String f : fields) {
                 Field field = clazz.getDeclaredField(f);
-                AuditProperty auditProperty = field.getAnnotation(AuditProperty.class);
-                if (auditProperty != null) {
+                AuditModelProperty auditModelProperty = field.getAnnotation(AuditModelProperty.class);
+                if (auditModelProperty != null) {
 
-                    String name = auditProperty.name();
-                    String pattern = auditProperty.pattern();
+                    String name = auditModelProperty.name();
+                    String pattern = auditModelProperty.pattern();
 
                     field.setAccessible(true);
                     try {
@@ -244,6 +244,6 @@ public class AuditUtils {
                 }
             }
         }
-        return StringUtils.join(list, ",");
+        return StringUtils.join(list, " ; ");
     }
 }
