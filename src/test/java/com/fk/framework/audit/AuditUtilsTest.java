@@ -47,19 +47,19 @@ public class AuditUtilsTest {
 
 @Getter
 @Setter
-@AuditModel
+@AuditModel(value = "operator")
 class Operator {
-    @AuditModelProperty(name = "姓名")
+    @AuditModelProperty(value = "姓名")
     private String name;
-    @AuditModelProperty(name = "年纪")
+    @AuditModelProperty(value = "年纪")
     private Integer age;
-    @AuditModelProperty(name = "生日")
+    @AuditModelProperty(value = "生日")
     private Date birthday;
-    @AuditModelProperty(name = "是否男生")
+    @AuditModelProperty(value = "是否男生")
     private Boolean isMan = false;
-    @AuditModelProperty(name = "标签", className = "java.lang.String")
+    @AuditModelProperty(value = "标签", className = "java.lang.String")
     private List<String> list;
-    @AuditModelProperty(name = "下属", className = "com.fk.framework.audit.Operator", include = {"name"})
+    @AuditModelProperty(value = "下属", className = "com.fk.framework.audit.Operator", include = {"name"})
     private List<com.fk.framework.audit.Operator> employee;
 }
 

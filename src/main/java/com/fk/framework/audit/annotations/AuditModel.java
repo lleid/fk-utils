@@ -6,11 +6,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 审计追踪类
+ * Provides additional information about Audit models.
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AuditModel {
+    /**
+     * Provide an alternative name for the model.
+     */
+    String value() default "";
 
-    String name() default "";
+    /**
+     * Provide a longer description of the class.
+     */
+    String description() default "";
 }

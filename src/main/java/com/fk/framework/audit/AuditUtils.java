@@ -47,7 +47,7 @@ public class AuditUtils {
         if (dest != null) {
             Class<?> dClazz = dest.getClass();
             AuditModel dAnnotation = dClazz.getAnnotation(AuditModel.class);
-            if (dest != null && dAnnotation != null && tAnnotation != null && dAnnotation.name().equals(tAnnotation.name())) {
+            if (dest != null && dAnnotation != null && tAnnotation != null && dAnnotation.value().equals(tAnnotation.value())) {
                 log.error("AuditUtils.generateAuditLog dest and target not the same object");
                 return null;
             }
@@ -61,7 +61,7 @@ public class AuditUtils {
                 List<String> list = Lists.newArrayList();
 
                 if (auditModelProperty != null) {
-                    String name = auditModelProperty.name();
+                    String value = auditModelProperty.value();
                     String className = auditModelProperty.className();
                     boolean isPersistent = auditModelProperty.isPersistent();
                     field.setAccessible(true);
@@ -77,11 +77,11 @@ public class AuditUtils {
                         String tStr = getValueByField(className, tValue, auditModelProperty);
 
                         if (isPersistent) {
-                            list.add(name);
+                            list.add(value);
                             list.add(dStr);
                             list.add(tStr);
                         } else if (!dStr.equals(tStr)) {
-                            list.add(name);
+                            list.add(value);
                             list.add(dStr);
                             list.add(tStr);
                         }
@@ -176,25 +176,25 @@ public class AuditUtils {
                 AuditModelProperty auditModelProperty = field.getAnnotation(AuditModelProperty.class);
                 if (auditModelProperty != null) {
 
-                    String name = auditModelProperty.name();
+                    String vlaue = auditModelProperty.value();
                     String pattern = auditModelProperty.pattern();
 
                     field.setAccessible(true);
                     try {
-                        Object value = field.get(obj);
-                        if (value != null) {
-                            if (value instanceof Date) {
+                        Object val = field.get(obj);
+                        if (val != null) {
+                            if (val instanceof Date) {
                                 if (StringUtils.isBlank(pattern)) {
                                     pattern = "yyyy-MM-dd HH:mm:ss";
                                 }
-                                Date v = (Date) value;
-                                list.add(name + ":" + DateFormatUtils.format(v, pattern));
-                            } else if (value instanceof Boolean) {
-                                Boolean v = (Boolean) value;
-                                list.add(name + ":" + (v ? "是" : "否"));
-                            } else if (value instanceof Integer || value instanceof Double || value instanceof String || value instanceof Long) {
-                                String v = String.valueOf(value);
-                                list.add(name + ":" + v);
+                                Date v = (Date) val;
+                                list.add(vlaue + ":" + DateFormatUtils.format(v, pattern));
+                            } else if (val instanceof Boolean) {
+                                Boolean v = (Boolean) val;
+                                list.add(vlaue + ":" + (v ? "是" : "否"));
+                            } else if (val instanceof Integer || val instanceof Double || val instanceof String || val instanceof Long) {
+                                String v = String.valueOf(val);
+                                list.add(vlaue + ":" + v);
                             }
                         }
                     } catch (Exception e) {

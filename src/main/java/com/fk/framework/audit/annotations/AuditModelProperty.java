@@ -17,6 +17,13 @@ public @interface AuditModelProperty {
      *
      * @return
      */
+    String value() default "";
+
+    /**
+     * 字段名称
+     *
+     * @return
+     */
     String name() default "";
 
     /**
