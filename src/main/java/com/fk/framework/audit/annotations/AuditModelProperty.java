@@ -55,4 +55,11 @@ public @interface AuditModelProperty {
      * @return
      */
     boolean isPersistent() default false;
+
+    /**
+     * 不会更新的字段
+     *
+     * @return
+     */
+    boolean isUpdatable() default true;
 }

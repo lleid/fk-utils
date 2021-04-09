@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class AuditUtilsTest {
@@ -41,7 +42,8 @@ public class AuditUtilsTest {
             System.out.println(v.getName() + "," + v.getSource() + "," + v.getTarget());
         }
         String auditLog2 = AuditUtils.translateAuditLogToString(auditLog);
-        System.out.println(auditLog2);
+        System.out.println("1" + " ".trim() + "1");
+
     }
 }
 
@@ -49,7 +51,7 @@ public class AuditUtilsTest {
 @Setter
 @AuditModel(value = "operator")
 class Operator {
-    @AuditModelProperty(value = "姓名")
+    @AuditModelProperty(value = "姓名", isUpdatable = false)
     private String name;
     @AuditModelProperty(value = "年纪")
     private Integer age;
@@ -60,6 +62,13 @@ class Operator {
     @AuditModelProperty(value = "标签", className = "java.lang.String")
     private List<String> list;
     @AuditModelProperty(value = "下属", className = "com.fk.framework.audit.Operator", include = {"name"})
-    private List<com.fk.framework.audit.Operator> employee;
+    private List<Operator> employee;
+    @AuditModelProperty(value = "下属名称", className = "java.lang.String")
+    public List<String> employeeNames;
+
+    public List<String> getEmployeeNames() {
+        List<String> list = getEmployee().stream().map(s -> s.getName()).collect(Collectors.toList());
+        return list;
+    }
 }
 

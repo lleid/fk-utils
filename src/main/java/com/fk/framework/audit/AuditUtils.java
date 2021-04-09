@@ -47,7 +47,7 @@ public class AuditUtils {
         if (dest != null) {
             Class<?> dClazz = dest.getClass();
             AuditModel dAnnotation = dClazz.getAnnotation(AuditModel.class);
-            if (dest != null && dAnnotation != null && tAnnotation != null && dAnnotation.value().equals(tAnnotation.value())) {
+            if (!dAnnotation.value().equals(tAnnotation.value())) {
                 log.error("AuditUtils.generateAuditLog dest and target not the same object");
                 return null;
             }
@@ -64,6 +64,7 @@ public class AuditUtils {
                     String value = auditModelProperty.value();
                     String className = auditModelProperty.className();
                     boolean isPersistent = auditModelProperty.isPersistent();
+                    boolean isUpdatable = auditModelProperty.isUpdatable();
                     field.setAccessible(true);
 
                     try {
@@ -76,7 +77,17 @@ public class AuditUtils {
                         Object tValue = field.get(target);
                         String tStr = getValueByField(className, tValue, auditModelProperty);
 
+                        dStr = StringUtils.isNotBlank(dStr) ? dStr.trim() : "";
+                        tStr = StringUtils.isNotBlank(tStr) ? tStr.trim() : "";
+
+                        if (!isUpdatable && StringUtils.isBlank(tStr)) {
+                            tStr = dStr;
+                        }
+
                         if (isPersistent) {
+                            if (dStr.equals(tStr) && StringUtils.isBlank(dStr)) {
+                                continue;
+                            }
                             list.add(value);
                             list.add(dStr);
                             list.add(tStr);
@@ -106,7 +117,6 @@ public class AuditUtils {
         String returnStr = " ";
         try {
             if (dValue != null) {
-
                 String pattern = auditModelProperty.pattern();
                 String[] include = auditModelProperty.include();
 
