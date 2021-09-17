@@ -1,6 +1,7 @@
 package com.fk.framework.files;
 
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -64,36 +65,52 @@ public class FileUploadUtils {
         List<String> relativeFilePaths = Lists.newArrayList();
 
         files.forEach(file -> {
-            try {
-                String fileName = file.getOriginalFilename().replace(" ", "");
-                List<String> fs = Lists.newArrayList();
-
-                fs.add(uploadPath);
-                if (StringUtils.isNotBlank(prefix)) {
-                    fs.add(prefix);
-                }
-
-                fs.add(DateFormatUtils.format(new Date(), "yyyyMMddHHmmss"));
-                fs.add(fileName);
-
-                String absoluteFilePath = StringUtils.join(fs, "/");
-
-                File f = new File(absoluteFilePath);
-                if (!f.getParentFile().exists()) {
-                    f.mkdirs();
-                }
-
-                Path path = Paths.get(absoluteFilePath);
-                Files.write(path, file.getBytes());
-
-                List<String> rfs = fs.subList(1, fs.size() - 1);
-                String relativeFilePath = StringUtils.join(rfs, "/");
-                relativeFilePaths.add(relativeFilePath);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            String relativeFilePath = upload(file, uploadPath, prefix);
+            relativeFilePaths.add(relativeFilePath);
         });
-
         return relativeFilePaths;
+    }
+
+    /**
+     * 文件上传
+     *
+     * @param request
+     * @param filesName  上传文件名
+     * @param uploadPath 上传路径
+     * @param prefix     前缀
+     */
+    public static String upload(MultipartFile file, String uploadPath, String prefix) {
+        try {
+            String originFileName = file.getOriginalFilename();
+            String[] nameArr = originFileName.split("\\.");
+            String fileName = RandomStringUtils.randomAlphabetic(6) + "." + nameArr[nameArr.length - 1];
+
+            List<String> fs = Lists.newArrayList();
+
+            fs.add(uploadPath);
+            if (StringUtils.isNotBlank(prefix)) {
+                fs.add(prefix);
+            }
+
+            fs.add(DateFormatUtils.format(new Date(), "yyyyMMddHHmmss"));
+            fs.add(fileName);
+
+            String absoluteFilePath = StringUtils.join(fs, File.separator);
+
+            File f = new File(absoluteFilePath);
+            if (!f.getParentFile().exists()) {
+                f.getParentFile().mkdirs();
+            }
+
+            Path path = Paths.get(absoluteFilePath);
+            Files.write(path, file.getBytes());
+
+            fs.remove(0);
+            String relativeFilePath = StringUtils.join(fs, "/");
+            return relativeFilePath;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
